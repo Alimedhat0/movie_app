@@ -14,29 +14,29 @@ class MovieDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create:
-          (context) => MovieDetailsProvider()..getMovieDetails(movieModel.id),
+          (context) =>
+              MovieDetailsProvider()
+                ..getMovieDetails(movieModel.id)
+                ..getMovieCredits(movieModel.id),
       child: Scaffold(
         appBar: AppBar(title: Text(movieModel.title)),
         body: Consumer<MovieDetailsProvider>(
           builder: (context, provider, _) {
             if (provider.movie == null) {
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             }
-            return Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 8.0,
-                vertical: 8.0,
-              ),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  spacing: 10,
-                  children: [
-                    MovieDetailsTitle(movieModel: movieModel),
-                    MovieDetailsCastCrew(movieId: movieModel.id),
-                    MovieDetailsCrew(movieId: movieModel.id),
-                  ],
-                ),
+
+            return SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  MovieDetailsTitle(movieModel: movieModel),
+                  const SizedBox(height: 22),
+                  const MovieDetailsCastCrew(),
+                  const SizedBox(height: 22),
+                  const MovieDetailsCrew(),
+                  const SizedBox(height: 28),
+                ],
               ),
             );
           },

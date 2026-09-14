@@ -1,79 +1,106 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/core/networking/api_constants.dart';
+import 'package:flutter_application_1/core/style/colors.dart';
 import 'package:flutter_application_1/feachers/movie_details/logic/movie_details_provider.dart';
+import 'package:flutter_application_1/feachers/movie_details/ui/widgets/credit_person_card.dart';
 import 'package:provider/provider.dart';
 
 class MovieDetailsCrew extends StatelessWidget {
-  final int movieId;
-  const MovieDetailsCrew({super.key, required this.movieId});
+  const MovieDetailsCrew({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => MovieDetailsProvider()..getMovieCredits(movieId),
-      child: Consumer<MovieDetailsProvider>(
-        builder: (context, provider, _) {
-          if (provider.credits == null) {
-            return Center(child: CircularProgressIndicator());
-          }
+    return Consumer<MovieDetailsProvider>(
+      builder: (context, provider, _) {
+        if (provider.credits == null) {
+          return const _CreditsLoading(title: 'Top Crew');
+        }
 
-          final credits = provider.credits!;
-          final crew = credits.crew.take(5).toList();
+        final crew = provider.credits!.crew.take(10).toList();
 
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Top Crew",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        return _CreditsSection(
+          title: 'Top Crew',
+          child: SizedBox(
+            height: 176,
+            child: ListView.separated(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              scrollDirection: Axis.horizontal,
+              itemCount: crew.length,
+              separatorBuilder: (context, index) => const SizedBox(width: 12),
+              itemBuilder: (context, index) {
+                final person = crew[index];
+                return CreditPersonCard(
+                  name: person.name,
+                  subtitle: person.job,
+                  profilePath: person.profilePath,
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _CreditsSection extends StatelessWidget {
+  final String title;
+  final Widget child;
+
+  const _CreditsSection({required this.title, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Text(
+            title,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurface,
+              fontSize: 20,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+        ),
+        const SizedBox(height: 14),
+        child,
+      ],
+    );
+  }
+}
+
+class _CreditsLoading extends StatelessWidget {
+  final String title;
+
+  const _CreditsLoading({required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final color = isDark ? AppColors.darkSurface : AppColors.lightSurface;
+
+    return _CreditsSection(
+      title: title,
+      child: SizedBox(
+        height: 176,
+        child: ListView.separated(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          scrollDirection: Axis.horizontal,
+          itemCount: 4,
+          separatorBuilder: (context, index) => const SizedBox(width: 12),
+          itemBuilder: (context, index) {
+            return Container(
+              width: 104,
+              height: 116,
+              decoration: BoxDecoration(
+                color: color,
+                borderRadius: BorderRadius.circular(8),
               ),
-              SizedBox(height: 10),
-              SizedBox(
-                height: 150,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: crew.length,
-                  itemBuilder: (context, index) {
-                    final actor = crew[index];
-                    return Container(
-                      width: 100,
-                      margin: EdgeInsets.only(right: 8),
-                      child: Column(
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Image.network(
-                              '${ApiConstants.imagesBaseUrl}${actor.profilePath}',
-                              height: 100,
-                              width: 80,
-                              fit: BoxFit.cover,
-                              errorBuilder:
-                                  (context, error, stackTrace) =>
-                                      Icon(Icons.person, size: 80),
-                            ),
-                          ),
-                          SizedBox(height: 5),
-                          Text(
-                            actor.name,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(fontSize: 12),
-                          ),
-                          Text(
-                            actor.job,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(fontSize: 10, color: Colors.grey),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

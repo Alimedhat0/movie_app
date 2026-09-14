@@ -22,7 +22,7 @@ class MovieDetailsProvider extends ChangeNotifier {
       isLoading = false;
       notifyListeners();
     } catch (e) {
-      print('Error fetching movie details: $e');
+      debugPrint('Error fetching movie details: $e');
     }
   }
 
@@ -36,7 +36,7 @@ class MovieDetailsProvider extends ChangeNotifier {
       credits = MovieCreditsModel.fromJson(response.data);
       notifyListeners();
     } catch (e) {
-      print('Error fetching credits: $e');
+      debugPrint('Error fetching credits: $e');
     }
   }
 }

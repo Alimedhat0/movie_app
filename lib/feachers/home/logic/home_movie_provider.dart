@@ -6,6 +6,7 @@ import 'package:flutter_application_1/feachers/home/models/movies_response_model
 
 class HomeMovieProvider extends ChangeNotifier {
   List<MovieModel> topRatedMovies = [];
+  List<MovieModel> searchResults = [];
 
   void getTopRatedMovies() async {
     try {
@@ -17,7 +18,7 @@ class HomeMovieProvider extends ChangeNotifier {
       topRatedMovies = data.movies;
       notifyListeners();
     } catch (e) {
-      print('Error fetching movies: $e');
+      debugPrint('Error fetching movies: $e');
     }
   }
 
@@ -33,7 +34,7 @@ class HomeMovieProvider extends ChangeNotifier {
       trendingMovies = data.movies;
       notifyListeners();
     } catch (e) {
-      print('Error fetching movies trending: $e');
+      debugPrint('Error fetching movies trending: $e');
     }
   }
 
@@ -48,7 +49,7 @@ class HomeMovieProvider extends ChangeNotifier {
       nowPlayingMovies = data.movies;
       notifyListeners();
     } catch (e) {
-      print('Error fetching movies now playing: $e');
+      debugPrint('Error fetching movies now playing: $e');
     }
   }
 
@@ -63,7 +64,7 @@ class HomeMovieProvider extends ChangeNotifier {
       upComingMovies = data.movies;
       notifyListeners();
     } catch (e) {
-      print('Error fetching movies upcoming: $e');
+      debugPrint('Error fetching movies upcoming: $e');
     }
   }
 
@@ -78,11 +79,16 @@ class HomeMovieProvider extends ChangeNotifier {
         },
       );
       final data = MovieResponesModel.fromJson(response.data);
-      trendingMovies = data.movies;
+      searchResults = data.movies;
       notifyListeners();
     } catch (e) {
-      print('Error searching for movies: $e');
+      debugPrint('Error searching for movies: $e');
     }
+  }
+
+  void clearSearchResults() {
+    searchResults = [];
+    notifyListeners();
   }
 
   bool getIsDark() => LocalStorage.getBool('isDark') ?? false;
